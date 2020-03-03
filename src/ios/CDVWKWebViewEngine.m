@@ -717,6 +717,12 @@ NSTimer *timer;
     return NO;
 }
 
+#if WK_WEB_VIEW_ONLY
+#define CDVWebViewNavigationTypeOther 5
+#else
+#define CDVWebViewNavigationTypeOther UIWebViewNavigationTypeOther
+#endif
+
 - (void) webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
     NSURL* url = [navigationAction.request URL];
@@ -736,7 +742,7 @@ NSTimer *timer;
             // https://issues.apache.org/jira/browse/CB-12497
             int navType = (int)navigationAction.navigationType;
             if (WKNavigationTypeOther == navigationAction.navigationType) {
-                navType = (int)UIWebViewNavigationTypeOther;
+                navType = (int)CDVWebViewNavigationTypeOther;
             }
             shouldAllowRequest = (((BOOL (*)(id, SEL, id, int))objc_msgSend)(plugin, selector, navigationAction.request, navType));
             if (!shouldAllowRequest) {
